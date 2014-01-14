@@ -1,0 +1,9 @@
+---
+ - hosts: test
+   name: "with_items with dictionnary"
+   tasks:
+    - debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
+      with_items: 
+          - key1: value1
+          - key2: value2
+  
