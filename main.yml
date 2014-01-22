@@ -1,9 +1,19 @@
 ---
  - hosts: test
-   name: "with_items with dictionnary"
    tasks:
-    - debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
+    - name: "with_items with dictionnary"
+      debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
       with_items: 
           - key1: value1
           - key2: value2
   
+    - name: "Hostvars"
+      debug: msg="hostvars={{hostvars}}"
+    - name: "Hostvars['localhost']"
+      debug: msg="hostvars['localhost']={{hostvars['localhost']}}"
+    - name: "Hostvars['localbis']"
+      debug: msg="hostvars['localbis']={{hostvars['localbis']}}"
+    - name: "Vars"
+      debug: msg="vars={{vars}}"
+    - name: "Groups"
+      debug: msg="groups={{groups}}"

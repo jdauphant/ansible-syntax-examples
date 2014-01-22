@@ -1,2 +1,6 @@
 [test]
 localhost  ansible_connection=local
+
+[group_test]
+localbis  ansible_connection=local
+
