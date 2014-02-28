@@ -1,11 +1,22 @@
 ---
  - hosts: test
+   vars:
+     list1: 
+       - item1
+     list2:
+       - item1
+       - item2
+     list3:
+       - item3
    tasks:
     - name: "with_items with dictionnary"
       debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
       with_items: 
           - key1: value1
           - key2: value2
+
+    - name: Combine 3 list
+      debug: msg="{{ list1 | union(list2) | union(list3) }}"
   
     - name: "Hostvars"
       debug: msg="hostvars={{hostvars}}"
@@ -17,3 +28,22 @@
       debug: msg="vars={{vars}}"
     - name: "Groups"
       debug: msg="groups={{groups}}"
+    - name: "Environment"
+      debug: msg="Environment={{environment}}"
+    - name: "inventory_name"
+      debug: msg="inventory_name={{vars.inventory_dir.split("/")[-1]}}"     
+
+
+ - hosts: dev_testing
+   tasks:
+    - name: Test IamIn
+      debug: msg="IamIn={{IamIn}} attended_value=dev"
+    - name: Test IamDefined
+      debug: msg="IamDefined={{IamDefined}} attended_value=yes"
+
+ - hosts: prod_testing
+   tasks:
+    - name: Test IamIn
+      debug: msg="IamIn={{IamIn}} attended_value=prod"
+    - name: Test IamDefined
+      debug: msg="IamDefined={{IamDefined}} attended_value=yes"
