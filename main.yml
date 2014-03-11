@@ -1,6 +1,7 @@
 ---
  - hosts: test
    vars:
+     test_match: "lol string"
      list1: 
        - item1
      list2:
@@ -32,7 +33,12 @@
       debug: msg="Environment={{environment}}"
     - name: "inventory_name"
       debug: msg="inventory_name={{vars.inventory_dir.split("/")[-1]}}"     
-
+    - name: "Test match"
+      debug: msg="Match={{test_match|match('.*[^o]')}} attended_value=True"
+    - name: "Test match 2"
+      debug: msg="Match={{test_match|match('.*stri.*')}} attended_value=True"
+    - name: "Test match 3"
+      debug: msg="Match={{test_match|match('.*nothing.*')}} attended_value=False"
 
  - hosts: dev_testing
    tasks:
