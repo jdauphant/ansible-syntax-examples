@@ -9,6 +9,30 @@
        - item2
      list3:
        - item3
+     dict1:
+       val1: "dict1"
+       val2: "dict1"
+     dict2:
+       val1: "dict2"
+       val3: "dict2"
+     users_root_password_file: "{{inventory_dir}}/passwords/{{ansible_hostname}}/rootpassword"
+     users_root_password_encrypt: "sha512_crypt"
+     users_root_password_length: "20"
+     users_root_password_chars: "ascii,numbers,digits,hexdigits,punctuation"
+     user_list:
+         user1:
+            var1: "2"
+            var2: "3"
+            groups: ['admin']
+         user2:
+            var1: "4"
+            var2: "5"
+            groups: ['users']
+         user3:
+            var1: "4"
+            var2: "5"
+            groups: ['admin']
+     user_admin: "{% for username, user in user_list.iteritems() %}{% if 'admin' in user.groups %}{{username}}{% if not loop.last %},{% endif%}{% endif %}{% endfor %}"
    tasks:
     - name: "with_items with dictionnary"
       debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
@@ -18,7 +42,6 @@
 
     - name: Combine 3 list
       debug: msg="{{ list1 | union(list2) | union(list3) }}"
-  
     - name: "Hostvars"
       debug: msg="hostvars={{hostvars}}"
     - name: "Hostvars['localhost']"
@@ -29,9 +52,21 @@
       debug: msg="vars={{vars}}"
     - name: "Groups"
       debug: msg="groups={{groups}}"
+    - name: "Defaults"
+      debug: msg="defaults={{defaults}}"
+    - name: "Group_names"
+      debug: msg="group_names={{group_names}}"
+    - name: "playbook_dir"
+      debug: msg="playbook_dir={{playbook_dir}}"
+    - name: "Inventory_file"
+      debug: msg="inventory_file={{inventory_file}}"
+    - name: "Inventory_dir"
+      debug: msg="inventory_dir={{inventory_dir}}"
+    - name: "Hostname"
+      debug: msg="Hostname={{inventory_hostname}}, shorthostname={{inventory_hostname_short}}"
     - name: "Environment"
       debug: msg="Environment={{environment}}"
-    - name: "inventory_name"
+    - name: "inventory_hostname"
       debug: msg="inventory_name={{vars.inventory_dir.split("/")[-1]}}"     
     - name: "Test match"
       debug: msg="Match={{test_match|match('.*[^o]')}} attended_value=True"
@@ -39,7 +74,55 @@
       debug: msg="Match={{test_match|match('.*stri.*')}} attended_value=True"
     - name: "Test match 3"
       debug: msg="Match={{test_match|match('.*nothing.*')}} attended_value=False"
+    - name: "Generate password with lookup"
+      debug: msg="Password={{ lookup('password', users_root_password_file)}}"
+    - name: "Generate password with lookup 2"
+      debug: msg="Password={{ lookup('password', users_root_password_file+' chars='+users_root_password_chars+' encrypt='+users_root_password_encrypt)}}"
+    - name: "Generate password with lookup 3"
+      debug: msg="Password={{ lookup('password', 'passwordfile length=30')}}"
+    - name: "Generate password with lookup 4"
+      debug: msg="Password={{ lookup('password', users_root_password_file+' chars='+users_root_password_chars+' encrypt='+users_root_password_encrypt+' length=30' )}}"
+    - name: "Lookup template"
+      debug: msg="template={{ lookup('template', 'templates/test.j2' )}}"
+    - name: "Short name"
+      debug: msg="{{ inventory_hostname.split('.')[0] }}"
+    - stat: path={{inventory_dir}}/main.yml
+      register: stat1
+    - name: "Test stat on exist file"
+      debug: msg="Stat1={{stat1}}"
+    - stat: path={{inventory_dir}}/unexist.yml
+      register: stat2
+    - name: "Test stat on unexist file"
+      debug: msg="Stat2={{stat2}}"
+    
+    - name: "Create SSH Key"
+      command: "ssh-keygen -t rsa -b 4096 -f id_dsa.key -N passkey creates=id_dsa.key"
+      connection: local
 
+    - name: "Iterate folder"
+      debug: msg="file={{item}}"
+      with_lines: /bin/ls /tmp
+
+
+    - name: "File in folder as a list"
+      debug: msg="file={{ lookup('lines', "/bin/ls /tmp")}}"
+
+    - name: "UUID"
+      debug: msg="uuid={{ lookup('lines','uuidgen') }}"
+
+    - name: "list users"
+      debug: msg="{{item.0}}"
+      with_items: user_list.keys()
+    - name: Combine 2 dict
+      debug: msg="dict1 + dict2 = {{ dict1.items() + dict2.items() }}"
+    - debug: msg="{{item}} is defined"
+      when: vars[item] is defined
+      with_items:
+       - undefined_var
+       - test_match 
+
+    - debug: msg="{{item}}"
+      with_items: user_admin.split(',')
  - hosts: dev_testing
    tasks:
     - name: Test IamIn
