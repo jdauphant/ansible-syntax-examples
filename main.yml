@@ -52,8 +52,6 @@
       debug: msg="vars={{vars}}"
     - name: "Groups"
       debug: msg="groups={{groups}}"
-    - name: "Defaults"
-      debug: msg="defaults={{defaults}}"
     - name: "Group_names"
       debug: msg="group_names={{group_names}}"
     - name: "playbook_dir"
