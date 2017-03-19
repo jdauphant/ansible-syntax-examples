@@ -123,10 +123,12 @@
 
     - debug: msg="{{item}}"
       with_items: user_admin.split(',')
-    - name: "empty list evaluation"
-      debug: msg="{{ 'empty list is evaluate to true' if empty_list == true else 'empty list is evaluate to false'}}"  
-    - name: "empty dict evaluation"
-      debug: msg="{{ 'empty dict is evaluate to true' if empty_dict == true else 'empty dict is evaluate to false'}}"      
+    - name: "empty list binary evaluation"
+      debug: msg="{{ 'empty list is evaluate to true' if empty_list else 'empty list is evaluate to false'}}"  
+    - name: "empty dict binary evaluation"
+      debug: msg="{{ 'empty dict is evaluate to true' if empty_dict else 'empty dict is evaluate to false'}}"    
+    - name: "check if list is empty"
+      debug: msg="{{ 'empty list lenght is greater than 0' if empty_dict|length > 0 else 'empty list lenght is 0'}}"    
  - hosts: dev_testing
    tasks:
     - name: Test IamIn
