@@ -33,6 +33,8 @@
             var2: "5"
             groups: ['admin']
      user_admin: "{% for username, user in user_list.iteritems() %}{% if 'admin' in user.groups %}{{username}}{% if not loop.last %},{% endif%}{% endif %}{% endfor %}"
+     empty_dict: {}
+     empty_list: []
    tasks:
     - name: "with_items with dictionnary"
       debug: msg="key={{ item.keys().0 }} ** value={{ item.values().0 }}"
@@ -121,6 +123,12 @@
 
     - debug: msg="{{item}}"
       with_items: user_admin.split(',')
+    - name: "empty list binary evaluation"
+      debug: msg="{{ 'empty list is evaluate to true' if empty_list else 'empty list is evaluate to false'}}"  
+    - name: "empty dict binary evaluation"
+      debug: msg="{{ 'empty dict is evaluate to true' if empty_dict else 'empty dict is evaluate to false'}}"    
+    - name: "check if list is empty"
+      debug: msg="{{ 'empty list lenght is greater than 0' if empty_dict|length > 0 else 'empty list lenght is 0'}}"    
  - hosts: dev_testing
    tasks:
     - name: Test IamIn
